@@ -1,6 +1,4 @@
-import vtk
-from vtk.util.numpy_support import vtk_to_numpy, numpy_to_vtk
-import utils.vtk_tools
+import utils
 import numpy as np
 import torch
 import trimesh

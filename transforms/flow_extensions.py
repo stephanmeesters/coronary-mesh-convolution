@@ -1,4 +1,4 @@
-from utils.artery_tools import IndexFinder, remove_vertices
+from utils.artery_tools import remove_vertices
 import torch
 import trimesh
 import numpy as np
@@ -14,25 +14,18 @@ class RemoveFlowExtensions(object):
     def __init__(self, factor=(5., 0)):
         self.factor = factor
 
-        self.inlet = IndexFinder(pytorch=True)
-
     def inlet_area(self, data):
-        if hasattr(data, 'inlet_index'):
+        assert hasattr(data, 'inlet_index')
 
-            # Inlet vertex mask
-            vertex_mask = torch.full((data.num_nodes,), False)
-            vertex_mask[data['inlet_index'].long()] = True
+        # Inlet vertex mask
+        vertex_mask = torch.full((data.num_nodes,), False)
+        vertex_mask[data['inlet_index'].long()] = True
 
-            # Determine the inlet mesh
-            inlet = remove_vertices(data.clone(), vertex_mask)
+        # Determine the inlet mesh
+        inlet = remove_vertices(data.clone(), vertex_mask)
 
-            # Use trimesh object for area computation
-            area = trimesh.Trimesh(vertices=inlet.pos.numpy(), faces=inlet.face.t().numpy()).area
-
-        else:
-
-            # Read inlet mesh from boundary-condition file
-            area = self.inlet.area(data.dir)
+        # Use trimesh object for area computation
+        area = trimesh.Trimesh(vertices=inlet.pos.numpy(), faces=inlet.face.t().numpy()).area
 
         return area
 
